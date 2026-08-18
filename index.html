@@ -190,7 +190,7 @@
                 <h3 style="font-weight: 800;">🔒 كلمة السر</h3>
                 <button class="close-btn" onclick="closeLoginModal()">✕</button>
             </div>
-            <input type="password" id="admin-password" placeholder="كلمة السر (1234)" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 10px; text-align: center;">
+            <input type="password" id="admin-password" placeholder="كلمة السر (***)" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 10px; text-align: center;">
             <button class="btn-save" style="width: 100%; padding: 12px;" onclick="checkPassword()">دخول 🔓</button>
         </div>
     </div>
@@ -242,7 +242,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        const ADMIN_PASSWORD = "1234";
+        const ADMIN_PASSWORD = "4321";
         let products = [];
         let currentCategory = 'all';
         let cart = {};
