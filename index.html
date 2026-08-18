@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر ولاد سي أحمد</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --accent: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-dark); padding: 20px; }
+
+        header {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white; padding: 20px 30px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap; gap: 15px;
+        }
+
+        .logo-title { display: flex; align-items: center; gap: 15px; }
+        .logo-icon {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 26px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        h1 { font-size: 24px; font-weight: 800; }
+
+        .btn-admin {
+            background-color: rgba(255, 255, 255, 0.1); color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 18px;
+            border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-admin:hover { background-color: rgba(255, 255, 255, 0.2); }
+
+        .categories-bar {
+            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;
+            margin-bottom: 20px; scrollbar-width: none;
+        }
+        .categories-bar::-webkit-scrollbar { display: none; }
+        .cat-btn {
+            background: #ffffff; border: 1px solid var(--border);
+            padding: 10px 20px; border-radius: 30px; font-weight: 700;
+            color: var(--text-muted); cursor: pointer; white-space: nowrap;
+            transition: all 0.2s; font-size: 14px;
+        }
+        .cat-btn.active, .cat-btn:hover {
+            background-color: var(--primary); color: white; border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .container { display: flex; gap: 25px; flex-wrap: wrap; }
+        
+        .products-grid {
+            flex: 2; display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px; min-width: 300px;
+        }
+
+        .product-card {
+            background-color: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 16px; padding: 20px; text-align: center; position: relative;
+            transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .product-card:hover {
+            transform: translateY(-6px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .product-img {
+            width: 85px; height: 85px; background: #f8fafc; border-radius: 14px;
+            margin: 10px auto 15px; display: flex; align-items: center; justify-content: center;
+            font-size: 38px; transition: transform 0.3s ease;
+        }
+        .product-card:hover .product-img { transform: scale(1.1); }
+
+        .product-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+        .product-price { color: var(--primary); font-weight: 800; font-size: 18px; margin-bottom: 4px; }
+        .product-stock { font-size: 12px; color: var(--text-muted); margin-bottom: 15px; }
+
+        .btn-add {
+            background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe;
+            padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; transition: all 0.2s;
+        }
+        .btn-add:hover { background-color: var(--primary); color: white; border-color: var(--primary); }
+
+        .cart-section {
+            flex: 1; background-color: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 16px; padding: 22px; min-width: 320px; height: fit-content;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .cart-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { padding: 10px 6px; text-align: right; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { color: var(--text-muted); }
+
+        .total-price {
+            font-size: 20px; font-weight: 800; color: var(--accent); margin: 15px 0;
+            background: #ecfdf5; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #a7f3d0;
+        }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; color: var(--text-muted); }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 10px; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 14px; outline: none; background: #f8fafc;
+        }
+
+        .btn-order {
+            background: linear-gradient(135deg, #10b981, #059669); color: white;
+            border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 800;
+            width: 100%; cursor: pointer; margin-top: 10px; transition: all 0.2s;
+        }
+        .btn-order:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4); }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 750px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .close-btn { font-size: 22px; cursor: pointer; border: none; background: none; color: var(--text-muted); }
+        .admin-table input, .admin-table select { width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 6px; }
+        .btn-save { background-color: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+        .btn-delete { background-color: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-title">
+            <div class="logo-icon">🛒</div>
+            <div>
+                <h1>متجر ولاد سي أحمد</h1>
+                <p style="font-size: 13px; color: #94a3b8;">سلعتك كتوصلك حتى لباك الدار 🛵</p>
+            </div>
+        </div>
+        <button class="btn-admin" onclick="openLoginModal()">⚙️ إدارة الستوك</button>
+    </header>
+
+    <div class="categories-bar">
+        <button class="cat-btn active" onclick="filterCategory('all', this)">الكل 📦</button>
+        <button class="cat-btn" onclick="filterCategory('cleaning', this)">مواد التنظيف 🧼</button>
+        <button class="cat-btn" onclick="filterCategory('legumes', this)">القطنيات والحبوب 🌾</button>
+        <button class="cat-btn" onclick="filterCategory('groceries', this)">المواد الأساسية 🍞</button>
+        <button class="cat-btn" onclick="filterCategory('drinks', this)">المشروبات والعصائر 🧃</button>
+    </div>
+
+    <div class="container">
+        <div class="products-grid" id="products-grid"></div>
+
+        <div class="cart-section">
+            <div class="cart-title"><span>🛒</span> سلة الشراء</div>
+            <table>
+                <thead>
+                    <tr><th>المنتج</th><th>الكمية</th><th>المجموع</th></tr>
+                </thead>
+                <tbody id="cart-items">
+                    <tr><td colspan="3" style="text-align: center; color: #94a3b8; padding: 20px 0;">السلة فارغة حالياً</td></tr>
+                </tbody>
+            </table>
+            <div class="total-price" id="total-price">المجموع: 0.00 DH</div>
+
+            <div class="cart-title" style="font-size: 16px; margin-top: 20px;"><span>🛵</span> معلومات التوصيل</div>
+            <div class="form-group"><label>الاسم الكامل:</label><input type="text" id="client-name" placeholder="أدخل اسمك الكامل"></div>
+            <div class="form-group"><label>رقم الهاتف:</label><input type="tel" id="client-phone" placeholder="06XXXXXXXX"></div>
+            <div class="form-group"><label>عنوان التوصيل:</label><textarea id="client-address" rows="2" placeholder="الحي، رقم المنزل..."></textarea></div>
+
+            <button class="btn-order" onclick="submitOrder()">تأكيد الطلب عبر WhatsApp 🚀</button>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content" style="max-width: 380px; text-align: center;">
+            <div class="modal-header">
+                <h3 style="font-weight: 800;">🔒 كلمة السر</h3>
+                <button class="close-btn" onclick="closeLoginModal()">✕</button>
+            </div>
+            <input type="password" id="admin-password" placeholder="كلمة السر (0000)" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 10px; text-align: center;">
+            <button class="btn-save" style="width: 100%; padding: 12px;" onclick="checkPassword()">دخول 🔓</button>
+        </div>
+    </div>
+
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ لوحة إدارة الستوك وتغيير السلع</h3>
+                <button class="close-btn" onclick="closeAdminModal()">✕</button>
+            </div>
+            
+            <h4 style="margin-bottom: 12px;">إضافة منتج جديد:</h4>
+            <div style="display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap;">
+                <input type="text" id="new-name" placeholder="اسم السلعة" style="flex:2; padding: 8px; border: 1px solid var(--border); border-radius: 8px;">
+                <input type="number" id="new-price" placeholder="الثمن DH" style="flex:1; padding: 8px; border: 1px solid var(--border); border-radius: 8px;">
+                <input type="number" id="new-stock" placeholder="الستوك" style="flex:1; padding: 8px; border: 1px solid var(--border); border-radius: 8px;">
+                <select id="new-cat" style="flex:1.5; padding: 8px; border: 1px solid var(--border); border-radius: 8px;">
+                    <option value="cleaning">مواد التنظيف 🧼</option>
+                    <option value="legumes">القطنيات 🌾</option>
+                    <option value="groceries">المواد الأساسية 🍞</option>
+                    <option value="drinks">مشروبات 🧃</option>
+                </select>
+                <input type="text" id="new-icon" placeholder="إيموجي 🍾" style="width: 80px; padding: 8px; border: 1px solid var(--border); border-radius: 8px;">
+                <button class="btn-save" onclick="addProduct()">إضافة ➕</button>
+            </div>
+
+            <button class="btn-delete" style="margin-bottom: 15px; font-weight: bold;" onclick="resetToDefaultData()">إعادة ضبط السلع الافتراضية 🔄</button>
+
+            <h4 style="margin-bottom: 12px;">قائمة المنتجات والستوك:</h4>
+            <table class="admin-table">
+                <thead>
+                    <tr><th>الاسم</th><th>الثمن</th><th>الستوك</th><th>الفئة</th><th>حذف</th></tr>
+                </thead>
+                <tbody id="admin-products-list"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        
+const firebaseConfig = {
+  apiKey: "AIzaSyDF9_Jip5xdS1uMS-Yfj3HPIJ6OoBdKzB0",
+  authDomain: "ayoub-21819.firebaseapp.com",
+  projectId: "ayoub-21819",
+  storageBucket: "ayoub-21819.firebasestorage.app",
+  messagingSenderId: "95009304080",
+  appId: "1:95009304080:web:b33ec8be3cb8c4c812e495",
+  measurementId: "G-FN0PSCLLPS"
+};
+
+        const ADMIN_PASSWORD = "4321";
+
+        const defaultProducts = [
+            // مواد التنظيف (cleaning)
+            { id: '1', name: 'جافيل أتاك 1L', price: 6.00, stock: 40, cat: 'cleaning', icon: '🧴' },
+            { id: '2', name: 'أوني (Ono) لغسيل الأواني', price: 14.00, stock: 30, cat: 'cleaning', icon: '🧼' },
+            { id: '3', name: 'سانيكروا 1L', price: 15.00, stock: 25, cat: 'cleaning', icon: '✨' },
+            { id: '4', name: 'معجون أسنان سينيال', price: 10.00, stock: 50, cat: 'cleaning', icon: '🪥' },
+            { id: '5', name: 'تيد أوموماتيك 1kg', price: 22.00, stock: 20, cat: 'cleaning', icon: '🧺' },
+
+            // القطنيات والحبوب (legumes)
+            { id: '6', name: 'عدس ممتاز (1kg)', price: 15.00, stock: 40, cat: 'legumes', icon: '🍲' },
+            { id: '7', name: 'حمص (1kg)', price: 18.00, stock: 35, cat: 'legumes', icon: '🧆' },
+            { id: '8', name: 'لوبيا بيضاء (1kg)', price: 17.00, stock: 30, cat: 'legumes', icon: '⚪' },
+            { id: '9', name: 'جلبانة يابسة (1kg)', price: 14.00, stock: 25, cat: 'legumes', icon: '🟢' },
+            { id: '10', name: 'رز كلاصي ممتاز (1kg)', price: 16.00, stock: 50, cat: 'legumes', icon: '🍚' },
+            { id: '11', name: 'الشعرية (1kg)', price: 12.00, stock: 45, cat: 'legumes', icon: '🍜' },
+
+            // المواد الأساسية (groceries)
+            { id: '12', name: 'زيت لوحة 1L', price: 20.00, stock: 50, cat: 'groceries', icon: '🍾' },
+            { id: '13', name: 'سكر قالب (2kg)', price: 13.00, stock: 60, cat: 'groceries', icon: '🧊' },
+            { id: '14', name: 'أتاي السبع', price: 12.00, stock: 45, cat: 'groceries', icon: '🍃' },
+            { id: '15', name: 'حليب السنترال 1L', price: 3.50, stock: 80, cat: 'groceries', icon: '🥛' },
+            { id: '16', name: 'زبدة بدوية 250g', price: 15.00, stock: 15, cat: 'groceries', icon: '🧈' },
+
+            // المشروبات والعصائر (drinks)
+            { id: '17', name: 'كوكاكولا 1.5L', price: 8.50, stock: 30, cat: 'drinks', icon: '🥤' },
+            { id: '18', name: 'عصير عين أطلس 1L', price: 10.00, stock: 20, cat: 'drinks', icon: '🧃' },
+            { id: '19', name: 'ماء معدني 5L', price: 11.00, stock: 25, cat: 'drinks', icon: '💧' }
+        ];
+
+        // تنظيف القائمة القديمة إذا كانت محفوظة فالمتصفح وتحديثها
+        let products = JSON.parse(localStorage.getItem('products_data')) || defaultProducts;
+        let currentCategory = 'all';
+        let cart = {};
+
+        function saveProducts() {
+            localStorage.setItem('products_data', JSON.stringify(products));
+            renderProducts();
+            renderAdminProducts();
+        }
+
+        function resetToDefaultData() {
+            if(confirm('هل تريد إعادة تحميل القائمة الجديدة كاملة بالقطنيات ومواد التنظيف؟')) {
+                products = defaultProducts;
+                saveProducts();
+            }
+        }
+
+        function filterCategory(cat, btn) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+            
+            const filtered = currentCategory === 'all' 
+                ? products 
+                : products.filter(p => p.cat === currentCategory);
+
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 40px;">لا توجد منتجات في هذه الفئة حالياً.</div>`;
+                return;
+            }
+
+            filtered.forEach(p => {
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div>
+                            <div class="product-img">${p.icon || '📦'}</div>
+                            <div class="product-title">${p.name}</div>
+                            <div class="product-price">${parseFloat(p.price).toFixed(2)} DH</div>
+                            <div class="product-stock">المتوفر: ${p.stock} قطعة</div>
+                        </div>
+                        <button class="btn-add" onclick="addToCart('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''}>
+                            ${p.stock > 0 ? 'إضافة للسلة 🛒' : 'غير متوفر ❌'}
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            let currentQty = cart[id] ? cart[id].qty : 0;
+            if (currentQty + 1 > product.stock) {
+                alert('وصلت للحد الأقصى المتوفر في الستوك!');
+                return;
+            }
+
+            if (cart[id]) {
+                cart[id].qty += 1;
+            } else {
+                cart[id] = { name: product.name, price: product.price, qty: 1 };
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const totalPriceEl = document.getElementById('total-price');
+            cartItems.innerHTML = '';
+            let total = 0;
+            const keys = Object.keys(cart);
+
+            if (keys.length === 0) {
+                cartItems.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #94a3b8; padding: 15px 0;">السلة فارغة حالياً</td></tr>';
+                totalPriceEl.innerText = 'المجموع: 0.00 DH';
+                return;
+            }
+
+            keys.forEach(id => {
+                const item = cart[id];
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                cartItems.innerHTML += `
+                    <tr>
+                        <td><b>${item.name}</b></td>
+                        <td>${item.qty}</td>
+                        <td><b>${itemTotal.toFixed(2)} DH</b></td>
+                    </tr>
+                `;
+            });
+            totalPriceEl.innerText = `المجموع: ${total.toFixed(2)} DH`;
+        }
+
+        function submitOrder() {
+            const name = document.getElementById('client-name').value.trim();
+            const phone = document.getElementById('client-phone').value.trim();
+            const address = document.getElementById('client-address').value.trim();
+
+            if (Object.keys(cart).length === 0) { alert('السلة فارغة!'); return; }
+            if (!name || !phone || !address) { alert('يرجى ملء كافة معلومات التوصيل!'); return; }
+
+            Object.keys(cart).forEach(id => {
+                let p = products.find(prod => prod.id === id);
+                if (p) p.stock -= cart[id].qty;
+            });
+            saveProducts();
+
+            let myPhone = "212667903785";
+            let itemsList = "";
+            let total = 0;
+
+            Object.values(cart).forEach(item => {
+                let itemTotal = item.price * item.qty;
+                total += itemTotal;
+                itemsList += `- ${item.name} (الكمية: ${item.qty}) = ${itemTotal.toFixed(2)} DH\n`;
+            });
+
+            let msg = `🛍️ *طلب جديد من المتجر*\n\n👤 *اسم الزبون:* ${name}\n📞 *الهاتف:* ${phone}\n📍 *العنوان:* ${address}\n\n📋 *المنتجات:*\n${itemsList}\n💰 *المجموع الإجمالي:* ${total.toFixed(2)} DH`;
+            window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+            
+            cart = {};
+            updateCart();
+        }
+
+        function openLoginModal() {
+            document.getElementById('admin-password').value = '';
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function checkPassword() {
+            const pwd = document.getElementById('admin-password').value;
+            if (pwd === ADMIN_PASSWORD) {
+                closeLoginModal();
+                openAdminModal();
+            } else {
+                alert('كلمة السر غير صحيحة! ❌');
+            }
+        }
+
+        function openAdminModal() {
+            renderAdminProducts();
+            document.getElementById('adminModal').style.display = 'flex';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function renderAdminProducts() {
+            const list = document.getElementById('admin-products-list');
+            list.innerHTML = '';
+            products.forEach((p, idx) => {
+                list.innerHTML += `
+                    <tr>
+                        <td><input type="text" value="${p.name}" onchange="updateProduct(${idx}, 'name', this.value)"></td>
+                        <td><input type="number" value="${p.price}" onchange="updateProduct(${idx}, 'price', this.value)"></td>
+                        <td><input type="number" value="${p.stock}" onchange="updateProduct(${idx}, 'stock', this.value)"></td>
+                        <td>
+                            <select onchange="updateProduct(${idx}, 'cat', this.value)">
+                                <option value="cleaning" ${p.cat==='cleaning'?'selected':''}>تنظيف</option>
+                                <option value="legumes" ${p.cat==='legumes'?'selected':''}>قطنيات</option>
+                                <option value="groceries" ${p.cat==='groceries'?'selected':''}>أساسية</option>
+                                <option value="drinks" ${p.cat==='drinks'?'selected':''}>مشروبات</option>
+                            </select>
+                        </td>
+                        <td><button class="btn-delete" onclick="deleteProduct(${idx})">🗑️</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateProduct(index, field, value) {
+            if (field === 'price' || field === 'stock') value = parseFloat(value) || 0;
+            products[index][field] = value;
+            saveProducts();
+        }
+
+        function addProduct() {
+            const name = document.getElementById('new-name').value.trim();
+            const price = parseFloat(document.getElementById('new-price').value);
+            const stock = parseInt(document.getElementById('new-stock').value);
+            const cat = document.getElementById('new-cat').value;
+            const icon = document.getElementById('new-icon').value.trim() || '📦';
+
+            if (!name || isNaN(price) || isNaN(stock)) {
+                alert('أدخل بيانات المنتج بشكل صحيح!');
+                return;
+            }
+
+            products.push({ id: Date.now().toString(), name, price, stock, cat, icon });
+            saveProducts();
+
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-price').value = '';
+            document.getElementById('new-stock').value = '';
+            document.getElementById('new-icon').value = '';
+        }
+
+        function deleteProduct(index) {
+            if (confirm('هل أنت تأكد من حذف هاد المنتج؟')) {
+                products.splice(index, 1);
+                saveProducts();
+            }
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
