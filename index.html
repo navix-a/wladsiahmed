@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>متجر ولاد سي أحمد</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- مكتبات Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <style>
         :root {
             --primary: #2563eb;
@@ -155,7 +160,7 @@
     </div>
 
     <div class="container">
-        <div class="products-grid" id="products-grid"></div>
+        <div class="products-grid" id="products-grid">جاري تحميل السلع...</div>
 
         <div class="cart-section">
             <div class="cart-title"><span>🛒</span> سلة الشراء</div>
@@ -178,21 +183,23 @@
         </div>
     </div>
 
+    <!-- نافذة كلمة السر -->
     <div class="modal" id="loginModal">
         <div class="modal-content" style="max-width: 380px; text-align: center;">
             <div class="modal-header">
                 <h3 style="font-weight: 800;">🔒 كلمة السر</h3>
                 <button class="close-btn" onclick="closeLoginModal()">✕</button>
             </div>
-            <input type="password" id="admin-password" placeholder="كلمة السر (0000)" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 10px; text-align: center;">
+            <input type="password" id="admin-password" placeholder="كلمة السر (1234)" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 10px; text-align: center;">
             <button class="btn-save" style="width: 100%; padding: 12px;" onclick="checkPassword()">دخول 🔓</button>
         </div>
     </div>
 
+    <!-- نافذة لوحة التحكم -->
     <div class="modal" id="adminModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>⚙️ لوحة إدارة الستوك وتغيير السلع</h3>
+                <h3>⚙️ لوحة إدارة الستوك (Firebase)</h3>
                 <button class="close-btn" onclick="closeAdminModal()">✕</button>
             </div>
             
@@ -208,12 +215,10 @@
                     <option value="drinks">مشروبات 🧃</option>
                 </select>
                 <input type="text" id="new-icon" placeholder="إيموجي 🍾" style="width: 80px; padding: 8px; border: 1px solid var(--border); border-radius: 8px;">
-                <button class="btn-save" onclick="addProduct()">إضافة ➕</button>
+                <button class="btn-save" onclick="addProduct()">نشر للجميع 🚀</button>
             </div>
 
-            <button class="btn-delete" style="margin-bottom: 15px; font-weight: bold;" onclick="resetToDefaultData()">إعادة ضبط السلع الافتراضية 🔄</button>
-
-            <h4 style="margin-bottom: 12px;">قائمة المنتجات والستوك:</h4>
+            <h4 style="margin-bottom: 12px;">قائمة المنتجات فـ السيرفر:</h4>
             <table class="admin-table">
                 <thead>
                     <tr><th>الاسم</th><th>الثمن</th><th>الستوك</th><th>الفئة</th><th>حذف</th></tr>
@@ -223,77 +228,60 @@
         </div>
     </div>
 
-    
-        
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDF9_Jip5xdS1uMS-Yfj3HPIJ6OoBdKzB0",
+            authDomain: "ayoub-21819.firebaseapp.com",
+            projectId: "ayoub-21819",
+            storageBucket: "ayoub-21819.firebasestorage.app",
+            messagingSenderId: "95009304080",
+            appId: "1:95009304080:web:b33ec8be3cb8c4c812e495",
+            measurementId: "G-FN0PSCLLPS"
+        };
 
-<script>
-  // Firebase Configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDF9_Jip5xdS1uMS-Yfj3HPIJ6OoBdKzB0",
-    authDomain: "ayoub-21819.firebaseapp.com",
-    projectId: "ayoub-21819",
-    storageBucket: "ayoub-21819.firebasestorage.app",
-    messagingSenderId: "95009304080",
-    appId: "1:95009304080:web:b33ec8be3cb8c4c812e495",
-    measurementId: "G-FN0PSCLLPS"
-  };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-  // Initialize Firebase & Firestore
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
-<script>
-        const ADMIN_PASSWORD = "4321";
-
-        const defaultProducts = [
-            // مواد التنظيف (cleaning)
-            { id: '1', name: 'جافيل أتاك 1L', price: 6.00, stock: 40, cat: 'cleaning', icon: '🧴' },
-            { id: '2', name: 'أوني (Ono) لغسيل الأواني', price: 14.00, stock: 30, cat: 'cleaning', icon: '🧼' },
-            { id: '3', name: 'سانيكروا 1L', price: 15.00, stock: 25, cat: 'cleaning', icon: '✨' },
-            { id: '4', name: 'معجون أسنان سينيال', price: 10.00, stock: 50, cat: 'cleaning', icon: '🪥' },
-            { id: '5', name: 'تيد أوموماتيك 1kg', price: 22.00, stock: 20, cat: 'cleaning', icon: '🧺' },
-
-            // القطنيات والحبوب (legumes)
-            { id: '6', name: 'عدس ممتاز (1kg)', price: 15.00, stock: 40, cat: 'legumes', icon: '🍲' },
-            { id: '7', name: 'حمص (1kg)', price: 18.00, stock: 35, cat: 'legumes', icon: '🧆' },
-            { id: '8', name: 'لوبيا بيضاء (1kg)', price: 17.00, stock: 30, cat: 'legumes', icon: '⚪' },
-            { id: '9', name: 'جلبانة يابسة (1kg)', price: 14.00, stock: 25, cat: 'legumes', icon: '🟢' },
-            { id: '10', name: 'رز كلاصي ممتاز (1kg)', price: 16.00, stock: 50, cat: 'legumes', icon: '🍚' },
-            { id: '11', name: 'الشعرية (1kg)', price: 12.00, stock: 45, cat: 'legumes', icon: '🍜' },
-
-            // المواد الأساسية (groceries)
-            { id: '12', name: 'زيت لوحة 1L', price: 20.00, stock: 50, cat: 'groceries', icon: '🍾' },
-            { id: '13', name: 'سكر قالب (2kg)', price: 13.00, stock: 60, cat: 'groceries', icon: '🧊' },
-            { id: '14', name: 'أتاي السبع', price: 12.00, stock: 45, cat: 'groceries', icon: '🍃' },
-            { id: '15', name: 'حليب السنترال 1L', price: 3.50, stock: 80, cat: 'groceries', icon: '🥛' },
-            { id: '16', name: 'زبدة بدوية 250g', price: 15.00, stock: 15, cat: 'groceries', icon: '🧈' },
-
-            // المشروبات والعصائر (drinks)
-            { id: '17', name: 'كوكاكولا 1.5L', price: 8.50, stock: 30, cat: 'drinks', icon: '🥤' },
-            { id: '18', name: 'عصير عين أطلس 1L', price: 10.00, stock: 20, cat: 'drinks', icon: '🧃' },
-            { id: '19', name: 'ماء معدني 5L', price: 11.00, stock: 25, cat: 'drinks', icon: '💧' }
-        ];
-
-        // تنظيف القائمة القديمة إذا كانت محفوظة فالمتصفح وتحديثها
-        let products = JSON.parse(localStorage.getItem('products_data')) || defaultProducts;
+        const ADMIN_PASSWORD = "1234";
+        let products = [];
         let currentCategory = 'all';
         let cart = {};
 
-        function saveProducts() {
-            localStorage.setItem('products_data', JSON.stringify(products));
-            renderProducts();
-            renderAdminProducts();
-        }
+        // المنتجات الافتراضية في حال كانت قاعدة البيانات فارغة
+        const defaultProducts = [
+            { name: "تيت أوميس", price: 25, stock: 15, cat: "cleaning", icon: "🧼" },
+            { name: "سائل جفل أونو", price: 12, stock: 20, cat: "cleaning", icon: "🧴" },
+            { name: "لوزور", price: 18, stock: 10, cat: "cleaning", icon: "🫧" },
+            { name: "عدس بلدي (كيلو)", price: 22, stock: 30, cat: "legumes", icon: "🌾" },
+            { name: "لوبيا رقيقة (كيلو)", price: 20, stock: 25, cat: "legumes", icon: "🫘" },
+            { name: "حمص ممتاز (كيلو)", price: 24, stock: 20, cat: "legumes", icon: "🥜" },
+            { name: "زيت زيتون (لتر)", price: 85, stock: 12, cat: "groceries", icon: "🍾" },
+            { name: "دقيق الفينو (كيلو)", price: 10, stock: 50, cat: "groceries", icon: "🍞" },
+            { name: "شاي أثاي سلطان", price: 28, stock: 40, cat: "groceries", icon: "🫖" },
+            { name: "عصير برتقال (لتر)", price: 15, stock: 18, cat: "drinks", icon: "🧃" },
+            { name: "مشروب غازي كوكاكولا", price: 10, stock: 30, cat: "drinks", icon: "🥤" }
+        ];
 
-        function resetToDefaultData() {
-            if(confirm('هل تريد إعادة تحميل القائمة الجديدة كاملة بالقطنيات ومواد التنظيف؟')) {
-                products = defaultProducts;
-                saveProducts();
+        // جلب البيانات مع التحقق إذا كانت قاعدة البيانات فارغة لإضافة المنتجات الافتراضية تلقائياً
+        db.collection("products").onSnapshot((snapshot) => {
+            products = [];
+            snapshot.forEach((doc) => {
+                products.push({ id: doc.id, ...doc.data() });
+            });
+
+            if (products.length === 0) {
+                // إضافة السلع التلقائية أول مرة
+                defaultProducts.forEach(p => {
+                    db.collection("products").add({
+                        ...p,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+            } else {
+                renderProducts();
+                renderAdminProducts();
             }
-        }
+        });
 
         function filterCategory(cat, btn) {
             currentCategory = cat;
@@ -322,10 +310,10 @@
                             <div class="product-img">${p.icon || '📦'}</div>
                             <div class="product-title">${p.name}</div>
                             <div class="product-price">${parseFloat(p.price).toFixed(2)} DH</div>
-                            <div class="product-stock">المتوفر: ${p.stock} قطعة</div>
+                            <div class="product-stock">المتوفر: ${p.stock ?? 10} قطعة</div>
                         </div>
-                        <button class="btn-add" onclick="addToCart('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''}>
-                            ${p.stock > 0 ? 'إضافة للسلة 🛒' : 'غير متوفر ❌'}
+                        <button class="btn-add" onclick="addToCart('${p.id}')" ${(p.stock !== undefined && p.stock <= 0) ? 'disabled' : ''}>
+                            ${(p.stock === undefined || p.stock > 0) ? 'إضافة للسلة 🛒' : 'غير متوفر ❌'}
                         </button>
                     </div>
                 `;
@@ -336,8 +324,10 @@
             const product = products.find(p => p.id === id);
             if (!product) return;
 
+            let stockLimit = product.stock ?? 999;
             let currentQty = cart[id] ? cart[id].qty : 0;
-            if (currentQty + 1 > product.stock) {
+            
+            if (currentQty + 1 > stockLimit) {
                 alert('وصلت للحد الأقصى المتوفر في الستوك!');
                 return;
             }
@@ -388,9 +378,11 @@
 
             Object.keys(cart).forEach(id => {
                 let p = products.find(prod => prod.id === id);
-                if (p) p.stock -= cart[id].qty;
+                if (p && p.stock !== undefined) {
+                    let newStock = p.stock - cart[id].qty;
+                    db.collection("products").doc(id).update({ stock: Math.max(0, newStock) });
+                }
             });
-            saveProducts();
 
             let myPhone = "212667903785";
             let itemsList = "";
@@ -440,61 +432,66 @@
         function renderAdminProducts() {
             const list = document.getElementById('admin-products-list');
             list.innerHTML = '';
-            products.forEach((p, idx) => {
+            products.forEach((p) => {
                 list.innerHTML += `
                     <tr>
-                        <td><input type="text" value="${p.name}" onchange="updateProduct(${idx}, 'name', this.value)"></td>
-                        <td><input type="number" value="${p.price}" onchange="updateProduct(${idx}, 'price', this.value)"></td>
-                        <td><input type="number" value="${p.stock}" onchange="updateProduct(${idx}, 'stock', this.value)"></td>
+                        <td><input type="text" value="${p.name || ''}" onchange="updateProduct('${p.id}', 'name', this.value)"></td>
+                        <td><input type="number" value="${p.price || 0}" onchange="updateProduct('${p.id}', 'price', this.value)"></td>
+                        <td><input type="number" value="${p.stock ?? 10}" onchange="updateProduct('${p.id}', 'stock', this.value)"></td>
                         <td>
-                            <select onchange="updateProduct(${idx}, 'cat', this.value)">
+                            <select onchange="updateProduct('${p.id}', 'cat', this.value)">
                                 <option value="cleaning" ${p.cat==='cleaning'?'selected':''}>تنظيف</option>
                                 <option value="legumes" ${p.cat==='legumes'?'selected':''}>قطنيات</option>
                                 <option value="groceries" ${p.cat==='groceries'?'selected':''}>أساسية</option>
                                 <option value="drinks" ${p.cat==='drinks'?'selected':''}>مشروبات</option>
                             </select>
                         </td>
-                        <td><button class="btn-delete" onclick="deleteProduct(${idx})">🗑️</button></td>
+                        <td><button class="btn-delete" onclick="deleteProduct('${p.id}')">🗑️</button></td>
                     </tr>
                 `;
             });
         }
 
-        function updateProduct(index, field, value) {
+        function updateProduct(docId, field, value) {
             if (field === 'price' || field === 'stock') value = parseFloat(value) || 0;
-            products[index][field] = value;
-            saveProducts();
+            let updateObj = {};
+            updateObj[field] = value;
+            db.collection("products").doc(docId).update(updateObj);
         }
 
         function addProduct() {
             const name = document.getElementById('new-name').value.trim();
             const price = parseFloat(document.getElementById('new-price').value);
-            const stock = parseInt(document.getElementById('new-stock').value);
+            const stock = parseInt(document.getElementById('new-stock').value) || 10;
             const cat = document.getElementById('new-cat').value;
             const icon = document.getElementById('new-icon').value.trim() || '📦';
 
-            if (!name || isNaN(price) || isNaN(stock)) {
+            if (!name || isNaN(price)) {
                 alert('أدخل بيانات المنتج بشكل صحيح!');
                 return;
             }
 
-            products.push({ id: Date.now().toString(), name, price, stock, cat, icon });
-            saveProducts();
-
-            document.getElementById('new-name').value = '';
-            document.getElementById('new-price').value = '';
-            document.getElementById('new-stock').value = '';
-            document.getElementById('new-icon').value = '';
+            db.collection("products").add({
+                name: name,
+                price: price,
+                stock: stock,
+                cat: cat,
+                icon: icon,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert('تمت إضافة المنتج بنجاح ونشره لجميع الزبناء! 🚀');
+                document.getElementById('new-name').value = '';
+                document.getElementById('new-price').value = '';
+                document.getElementById('new-stock').value = '';
+                document.getElementById('new-icon').value = '';
+            });
         }
 
-        function deleteProduct(index) {
-            if (confirm('هل أنت تأكد من حذف هاد المنتج؟')) {
-                products.splice(index, 1);
-                saveProducts();
+        function deleteProduct(docId) {
+            if (confirm('هل أنت تأكد من حذف هاد المنتج من السيرفر؟')) {
+                db.collection("products").doc(docId).delete();
             }
         }
-
-        renderProducts();
     </script>
 </body>
 </html>
