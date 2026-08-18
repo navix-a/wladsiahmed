@@ -223,18 +223,29 @@
         </div>
     </div>
 
-    <script>
+    
         
-const firebaseConfig = {
-  apiKey: "AIzaSyDF9_Jip5xdS1uMS-Yfj3HPIJ6OoBdKzB0",
-  authDomain: "ayoub-21819.firebaseapp.com",
-  projectId: "ayoub-21819",
-  storageBucket: "ayoub-21819.firebasestorage.app",
-  messagingSenderId: "95009304080",
-  appId: "1:95009304080:web:b33ec8be3cb8c4c812e495",
-  measurementId: "G-FN0PSCLLPS"
-};
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
+<script>
+  // Firebase Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDF9_Jip5xdS1uMS-Yfj3HPIJ6OoBdKzB0",
+    authDomain: "ayoub-21819.firebaseapp.com",
+    projectId: "ayoub-21819",
+    storageBucket: "ayoub-21819.firebasestorage.app",
+    messagingSenderId: "95009304080",
+    appId: "1:95009304080:web:b33ec8be3cb8c4c812e495",
+    measurementId: "G-FN0PSCLLPS"
+  };
+
+  // Initialize Firebase & Firestore
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+<script>
         const ADMIN_PASSWORD = "4321";
 
         const defaultProducts = [
